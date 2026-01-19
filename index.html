@@ -3,626 +3,450 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SilverStrength Pro v3</title>
+    <title>SilverStrength AI</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
-            --primary: #0f172a;       /* Slate 900 */
-            --primary-light: #334155; /* Slate 700 */
-            --accent: #2563eb;        /* Blue 600 */
-            --accent-bg: #eff6ff;     /* Blue 50 */
-            --success: #059669;       /* Emerald 600 */
-            --bg: #f1f5f9;            /* Slate 100 */
-            --card: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
+            --primary: #0f172a; --secondary: #334155;
+            --accent: #ef4444; /* Red for 'Burn'/Weight Loss focus */
+            --accent-soft: #fee2e2;
+            --success: #10b981; --bg: #f8fafc; --card: #ffffff;
+            --text: #1e293b; --border: #e2e8f0;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            padding-bottom: 90px;
-            height: 100vh;
-        }
-
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; }
+        
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-
-        /* Typography */
-        h1 { font-size: 1.6rem; color: var(--primary); margin: 0 0 10px 0; letter-spacing: -0.5px; }
-        h2 { font-size: 1.3rem; margin: 25px 0 15px 0; color: var(--primary-light); }
-        h3 { font-size: 1.1rem; margin: 0 0 8px 0; font-weight: 700; }
-        p { color: var(--text-muted); line-height: 1.6; margin-top: 0; font-size: 0.95rem; }
-        
-        .section-title {
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            font-weight: 700;
-            margin-bottom: 10px;
-            margin-top: 20px;
-        }
-
-        /* Cards */
-        .card {
-            background: var(--card);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            border: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
-
-        /* --- ONBOARDING --- */
-        #view-onboarding {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--card); z-index: 200;
-            display: flex; flex-direction: column; justify-content: center; padding: 40px;
-        }
-        .input-group { margin-bottom: 25px; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--primary); }
-        .std-input {
-            width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--border);
-            font-size: 1.1rem; background: var(--bg); outline: none;
-        }
-        .std-input:focus { border-color: var(--accent); }
-
-        /* --- DASHBOARD --- */
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .avatar {
-            width: 45px; height: 45px; background: var(--primary); color: white;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        }
-        
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 20px; border-radius: 16px; text-align: center; border: 1px solid var(--border); }
-        .stat-val { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin-bottom: 5px; }
-        .stat-lbl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; }
-
-        /* --- ROUTINES PAGE --- */
-        .routine-card {
-            background: white; border: 1px solid var(--border); border-radius: 16px;
-            margin-bottom: 20px; overflow: hidden; transition: transform 0.2s;
-        }
-        .routine-card:active { transform: scale(0.99); }
-        
-        .routine-header {
-            padding: 20px; background: var(--primary); color: white;
-            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
-        }
-        .routine-body { padding: 20px; display: none; }
-        .routine-body.open { display: block; }
-
-        .tag-row { display: flex; gap: 8px; margin: 10px 0; }
-        .tag { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; background: #f1f5f9; color: var(--text-muted); font-weight: 600; }
-        
-        .exercise-list-item {
-            padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center;
-        }
-        .exercise-list-item:last-child { border-bottom: none; }
-        .ex-number {
-            width: 24px; height: 24px; background: var(--accent); color: white;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; font-weight: bold; margin-right: 12px;
-        }
-
-        /* --- ACTIVE WORKOUT --- */
-        #active-workout-view {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff;
-            z-index: 100; display: none; flex-direction: column; overflow-y: auto;
-        }
-        #active-workout-view.visible { display: flex; }
-        
-        .active-container { padding: 20px; padding-bottom: 100px; max-width: 600px; margin: 0 auto; width: 100%; }
-        
-        .instruction-box {
-            background: #f8fafc; border-radius: 12px; padding: 20px; margin: 20px 0; border: 1px solid var(--border);
-        }
-        .step-list { padding-left: 20px; margin: 0; }
-        .step-list li { margin-bottom: 10px; color: var(--text-main); line-height: 1.5; }
-
-        .timer-display { font-size: 4.5rem; font-weight: 800; color: var(--primary); text-align: center; font-variant-numeric: tabular-nums; margin: 20px 0;}
-        .rep-display { font-size: 4rem; font-weight: 800; color: var(--accent); text-align: center; margin: 20px 0;}
-
-        /* --- CALENDAR --- */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; margin-top: 15px;}
-        .cal-head { font-weight: bold; font-size: 0.8rem; padding-bottom: 10px; color: var(--text-muted); }
-        .cal-cell {
-            height: 38px; display: flex; align-items: center; justify-content: center;
-            border-radius: 8px; font-size: 0.9rem; position: relative;
-        }
-        .cal-cell.today { border: 2px solid var(--primary); font-weight: bold; }
-        .cal-cell.done { background-color: var(--success); color: white; }
-
-        /* --- NAV --- */
-        .nav-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 80px;
-            background: rgba(255,255,255,0.95); border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: center; z-index: 50;
-            backdrop-filter: blur(10px);
-        }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center; border: none; background: none;
-            color: var(--text-muted); font-size: 0.7rem; cursor: pointer; width: 100%; font-weight: 500;
-        }
-        .nav-item i { font-size: 1.4rem; margin-bottom: 6px; transition: 0.2s; }
-        .nav-item.active { color: var(--accent); }
-        
-        .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-accent { background: var(--accent); color: white; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-main); }
-        
+        h1, h2, h3 { margin: 0; }
         .hidden { display: none !important; }
 
+        /* --- CARDS & UTILS --- */
+        .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid var(--border); }
+        .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text); }
+
+        /* --- DASHBOARD --- */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .avatar { width: 40px; height: 40px; background: var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
+        
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .stat-box { background: white; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
+        .stat-num { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+        .stat-lbl { font-size: 0.7rem; text-transform: uppercase; color: #64748b; font-weight: 600; letter-spacing: 0.5px; }
+
+        /* --- AI RECOMMENDATION BOX --- */
+        .ai-rec-box { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border-radius: 16px; padding: 25px; position: relative; overflow: hidden; }
+        .ai-badge { background: var(--accent); font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; font-weight: bold; display: inline-block; margin-bottom: 10px; }
+        .ai-reason { font-size: 0.85rem; opacity: 0.8; margin-top: 10px; line-height: 1.5; border-left: 2px solid var(--accent); padding-left: 10px; }
+
+        /* --- WORKOUT LIST --- */
+        .routine-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+        
+        /* --- ACTIVE WORKOUT MODE --- */
+        #view-active { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--card); z-index: 100; overflow-y: auto; display: flex; flex-direction: column; }
+        .active-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg); }
+        .active-body { padding: 20px; flex: 1; }
+        
+        .timer-big { font-size: 4rem; font-weight: 800; text-align: center; margin: 20px 0; color: var(--primary); font-variant-numeric: tabular-nums; }
+        .rep-big { font-size: 3.5rem; font-weight: 800; text-align: center; margin: 20px 0; color: var(--accent); }
+        
+        .form-check-card { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 15px; margin-top: 20px; }
+        .form-title { font-weight: bold; color: #0369a1; margin-bottom: 8px; font-size: 0.9rem; text-transform: uppercase; }
+        .form-list { margin: 0; padding-left: 20px; font-size: 0.95rem; color: #334155; }
+        .form-list li { margin-bottom: 5px; }
+        
+        .mistake-card { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 15px; margin-top: 15px; }
+        
+        /* --- NAV --- */
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 80px; background: rgba(255,255,255,0.95); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 50; backdrop-filter: blur(5px); }
+        .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; color: #64748b; font-size: 0.75rem; font-weight: 600; cursor: pointer; width: 100%; }
+        .nav-btn i { font-size: 1.4rem; margin-bottom: 5px; }
+        .nav-btn.active { color: var(--accent); }
+
+        /* --- ONBOARDING --- */
+        .onboarding-screen { position: fixed; inset: 0; background: white; z-index: 200; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
+        .inp { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 10px; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
-    <div id="view-onboarding" class="hidden">
-        <h1 style="text-align: center; margin-bottom: 10px;">SilverStrength Pro</h1>
-        <p style="text-align: center; margin-bottom: 40px;">Personalized longevity & strength training.</p>
+    <div id="screen-onboarding" class="onboarding-screen hidden">
+        <h1>Welcome to SilverStrength AI</h1>
+        <p style="color:#64748b; margin-bottom:30px;">Optimized for weight loss & functional strength.</p>
         
-        <div class="input-group">
-            <label>First Name</label>
-            <input type="text" id="inp-name" class="std-input" placeholder="e.g. Robert">
-        </div>
-
-        <div class="input-group">
-            <label>Current Weight (lbs)</label>
-            <input type="number" id="inp-weight" class="std-input" placeholder="e.g. 200">
-        </div>
-
-        <button class="btn btn-accent" onclick="completeOnboarding()">Start Journey</button>
+        <label>Name</label>
+        <input type="text" id="inp-name" class="inp" placeholder="Your Name">
+        
+        <label>Current Weight (lbs)</label>
+        <input type="number" id="inp-weight" class="inp" placeholder="e.g. 200">
+        
+        <button class="btn btn-accent" onclick="finishOnboarding()">Start Transformation</button>
     </div>
 
     <div id="view-dashboard" class="container">
-        <div class="header-row">
+        <div class="header">
             <div>
-                <h1 id="dash-greeting">Hello</h1>
-                <p>Let's prioritize your health today.</p>
+                <h2 id="dash-greeting">Hello</h2>
+                <div style="font-size:0.85rem; color:#64748b;" id="dash-date">Monday, Oct 24</div>
             </div>
             <div class="avatar"><i class="fas fa-user"></i></div>
         </div>
 
-        <div class="stat-grid">
-            <div class="stat-card">
-                <div class="stat-val" id="dash-streak">0</div>
-                <div class="stat-lbl">Workout Streak</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-val" id="dash-weight">--</div>
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-num" id="dash-weight">--</div>
                 <div class="stat-lbl">Current Weight</div>
             </div>
+            <div class="stat-box">
+                <div class="stat-num" id="dash-workouts">0</div>
+                <div class="stat-lbl">Sessions Done</div>
+            </div>
         </div>
 
-        <div class="card">
-            <h3>Today's Recommendation</h3>
-            <div id="recommendation-area"></div>
-        </div>
-    </div>
-
-    <div id="view-routines" class="container hidden">
-        <h1>Workout Routines</h1>
-        <p>Select a routine to view details and instructions.</p>
-
-        <div id="routines-list">
+        <div id="ai-suggestion-area">
             </div>
-    </div>
 
-    <div id="view-history" class="container hidden">
-        <h1>History</h1>
-        <p>Track your consistency over time.</p>
-
+        <h3 style="margin: 25px 0 15px 0;">Routine Library</h3>
         <div class="card">
-            <h3 id="cal-month-name">Month</h3>
-            <div class="calendar-grid">
-                <div class="cal-head">S</div><div class="cal-head">M</div><div class="cal-head">T</div>
-                <div class="cal-head">W</div><div class="cal-head">T</div><div class="cal-head">F</div><div class="cal-head">S</div>
+            <div class="routine-item" onclick="previewRoutine('morning_metabolism')">
+                <div>
+                    <strong>Morning Metabolism</strong>
+                    <div style="font-size:0.8rem; color:#64748b;">Cardio & Flow • 15 Mins</div>
+                </div>
+                <i class="fas fa-chevron-right" style="color:#cbd5e1;"></i>
             </div>
-            <div class="calendar-grid" id="calendar-body"></div>
+            <div class="routine-item" onclick="previewRoutine('strength_burn')">
+                <div>
+                    <strong>Full Body Burn</strong>
+                    <div style="font-size:0.8rem; color:#64748b;">Strength & Resistance • 25 Mins</div>
+                </div>
+                <i class="fas fa-chevron-right" style="color:#cbd5e1;"></i>
+            </div>
+            <div class="routine-item" onclick="previewRoutine('evening_mobility')">
+                <div>
+                    <strong>Evening Recovery</strong>
+                    <div style="font-size:0.8rem; color:#64748b;">Stretch & Joints • 12 Mins</div>
+                </div>
+                <i class="fas fa-chevron-right" style="color:#cbd5e1;"></i>
+            </div>
         </div>
     </div>
 
     <div id="view-tracker" class="container hidden">
-        <h1>Weight Tracker</h1>
-        <p>Your progress trend.</p>
-        <div class="card">
-            <canvas id="weightChart" width="400" height="250"></canvas>
+        <h2>Weight Trajectory</h2>
+        <div class="card" style="height: 300px; margin-top:20px;">
+            <canvas id="weightChart"></canvas>
         </div>
         <div class="card">
-            <h3>Log Entry</h3>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <input type="number" id="tracker-input" class="std-input" placeholder="lbs">
-                <button class="btn btn-primary" style="width: auto;" onclick="addWeightLog()">Save</button>
+            <h3>Log Weigh-in</h3>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <input type="number" id="weight-log-input" class="inp" style="margin:0;" placeholder="lbs">
+                <button class="btn btn-primary" style="width:auto;" onclick="logWeight()">Save</button>
             </div>
         </div>
     </div>
 
-    <div id="active-workout-view">
-        <div class="active-container">
-            <div class="header-row">
-                <button class="btn-outline" style="width:auto; padding:8px 16px; font-size:0.9rem;" onclick="quitWorkout()">Quit</button>
-                <div style="font-weight:bold; color:var(--text-muted);" id="act-routine-name">Routine A</div>
-                <div style="width:50px;"></div>
+    <div id="view-active" class="hidden">
+        <div class="active-header">
+            <button class="btn-outline" style="width:auto; padding:8px 15px;" onclick="quitWorkout()">Quit</button>
+            <div style="font-weight:bold;" id="act-title">Routine</div>
+            <div style="width:50px;"></div>
+        </div>
+        <div class="active-body">
+            <div style="text-align:center;">
+                <span style="background:#e2e8f0; padding:4px 10px; border-radius:15px; font-size:0.75rem; font-weight:bold;">EXERCISE <span id="act-index">1</span></span>
+                <h1 id="act-name" style="margin-top:10px; font-size:2rem; line-height:1.1;">Name</h1>
             </div>
 
-            <div style="text-align:center; margin-top:10px;">
-                <div style="color:var(--accent); font-weight:800; letter-spacing:1px; font-size:0.8rem; text-transform:uppercase;">Current Exercise</div>
-                <h1 id="act-name" style="font-size:2rem; line-height:1.2; margin-top:5px;">Name</h1>
+            <div id="act-visual-area"></div>
+
+            <div class="form-check-card">
+                <div class="form-title"><i class="fas fa-check-circle"></i> Perfect Form</div>
+                <ul class="form-list" id="act-cues"></ul>
+                <div style="margin-top:10px; font-weight:bold; font-size:0.9rem; color:#0369a1;">Tempo: <span id="act-tempo" style="font-weight:normal;">2-0-2</span></div>
+                <div style="font-weight:bold; font-size:0.9rem; color:#0369a1;">Breath: <span id="act-breath" style="font-weight:normal;">Exhale on push</span></div>
             </div>
 
-            <div id="act-display-area">
-                </div>
-
-            <div class="instruction-box">
-                <h3 style="color:var(--primary); margin-bottom:10px;"><i class="fas fa-list-ol"></i> How to Perform</h3>
-                <ol id="act-steps" class="step-list">
-                    </ol>
+            <div class="mistake-card">
+                <div class="form-title" style="color:#b91c1c;"><i class="fas fa-exclamation-triangle"></i> Watch Out For</div>
+                <ul class="form-list" id="act-mistakes" style="color:#7f1d1d;"></ul>
             </div>
-
-            <div class="instruction-box" style="background: #f0fdf4; border-color: #bbf7d0;">
-                <h3 style="color: #166534; margin-bottom:10px;"><i class="fas fa-heartbeat"></i> Why It Helps</h3>
-                <p id="act-why" style="color: #15803d; margin:0;">Benefits text...</p>
-            </div>
-
-            <button class="btn btn-success" id="act-btn" onclick="nextExercise()" style="margin-top:20px; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);">Start</button>
+            
+            <div style="height: 100px;"></div> </div>
+        <div style="position:fixed; bottom:0; width:100%; padding:20px; background:white; border-top:1px solid #e2e8f0;">
+            <button class="btn btn-success" id="act-btn" onclick="nextExercise()">Start</button>
         </div>
     </div>
 
-    <div class="nav-bar">
-        <button class="nav-item active" onclick="switchTab('dashboard')">
-            <i class="fas fa-home"></i> Home
+    <div class="nav">
+        <button class="nav-btn active" onclick="switchTab('dashboard')">
+            <i class="fas fa-home"></i> Coach
         </button>
-        <button class="nav-item" onclick="switchTab('routines')">
-            <i class="fas fa-dumbbell"></i> Routines
-        </button>
-        <button class="nav-item" onclick="switchTab('history')">
-            <i class="fas fa-calendar-alt"></i> History
-        </button>
-        <button class="nav-item" onclick="switchTab('tracker')">
+        <button class="nav-btn" onclick="switchTab('tracker')">
             <i class="fas fa-chart-line"></i> Weight
         </button>
     </div>
 
     <script>
-        /* --- 1. DATA & CONTENT --- */
-        
-        // Detailed Encyclopedia
-        const exerciseLibrary = {
-            "March in Place": {
+        /* --- 1. EXERCISE DATABASE (SMART CONTENT) --- */
+        const library = {
+            "Metabolic March": {
                 type: "time", val: 60,
-                steps: [
-                    "Stand tall with your feet hip-width apart.",
-                    "Lift your right knee until your thigh is parallel to the floor (or as high as feels safe).",
-                    "Simultaneously swing your left arm forward.",
-                    "Return to the start and switch to the left leg and right arm.",
-                    "Keep a steady, rhythmic pace. Breathe naturally."
-                ],
-                why: "Elevates heart rate to warm up muscles and lubricate joints without the high impact of running."
+                cues: ["Lift knees to hip height", "Swing arms vigorously (cheek to cheek)", "Land softly on balls of feet"],
+                mistakes: ["Slouching forward", "Stomping feet loudly", "Holding breath"],
+                tempo: "Fast but controlled rhythm",
+                breath: "Inhale 2 steps, Exhale 2 steps"
+            },
+            "Chair Squats": {
+                type: "reps", val: 15,
+                cues: ["Feet shoulder-width apart", "Tap bum to seat, don't fully sit", "Drive up through heels"],
+                mistakes: ["Knees caving inward", "Looking down at feet (keeps chest down)", "Resting too long on the chair"],
+                tempo: "3 sec down, 1 sec up (Explosive up)",
+                breath: "Inhale down, Exhale up"
             },
             "Wall Push-ups": {
                 type: "reps", val: 12,
-                steps: [
-                    "Stand facing a wall, about an arm's length away.",
-                    "Place your palms on the wall at shoulder height and shoulder-width apart.",
-                    "Keep your body in a straight line from head to heels. Don't let hips sag.",
-                    "Bend your elbows to lower your chest toward the wall.",
-                    "Push back to the starting position."
-                ],
-                why: "Builds upper body strength (chest, shoulders, triceps) and bone density with minimal stress on the wrists."
+                cues: ["Hands at chest height", "Body in straight plank line", "Elbows tucked 45 degrees (not flared)"],
+                mistakes: ["Hips sagging", "Chin poking forward", "Shrugging shoulders to ears"],
+                tempo: "2 sec down, 1 sec hold, 2 sec up",
+                breath: "Inhale down, Exhale push"
             },
-            "Chair Squats": {
-                type: "reps", val: 12,
-                steps: [
-                    "Stand in front of a sturdy chair with feet shoulder-width apart.",
-                    "Keep your chest lifted and look straight ahead.",
-                    "Push your hips back and bend your knees as if to sit.",
-                    "Lower yourself until your glutes lightly tap the chair seat.",
-                    "Push through your heels to return to a standing position."
-                ],
-                why: "Essential for independence. Strengthens the quadriceps and glutes to protect knee joints and assist in getting up from seats."
+            "Sit-to-Stand Intervals": {
+                type: "time", val: 45,
+                cues: ["Stand up completely", "Sit down completely", "Repeat continuously"],
+                mistakes: ["Using hands on knees to push up", "Flopping down onto the chair"],
+                tempo: "Continuous motion, no pauses",
+                breath: "Rhythmic breathing"
             },
-            "Plank Support": {
-                type: "time", val: 30,
-                steps: [
-                    "Place your forearms on a sturdy chair, counter, or wall.",
-                    "Walk your feet back until your body forms a straight line.",
-                    "Tighten your stomach muscles (pull belly button to spine).",
-                    "Hold this position without letting your lower back arch or sag.",
-                    "Breathe deeply throughout the hold."
-                ],
-                why: "Strengthens the deep core muscles (transverse abdominis), which act as a natural corset to support your lower back."
+            "Doorway Rows": {
+                type: "reps", val: 15,
+                cues: ["Hold doorframe, lean back", "Pull chest to doorframe", "Squeeze shoulder blades together"],
+                mistakes: ["Leading with hips", "Pulling with biceps only"],
+                tempo: "1 sec pull, 2 sec squeeze, 3 sec release",
+                breath: "Exhale pull, Inhale release"
             },
-            "Bird Dog": {
-                type: "reps", val: 10,
-                steps: [
-                    "Start on your hands and knees on a comfortable surface (mat/carpet).",
-                    "Keep your spine neutral (flat like a table).",
-                    "Extend your right arm forward and your left leg straight back simultaneously.",
-                    "Hold for a second, then return to the starting position.",
-                    "Switch to left arm and right leg."
-                ],
-                why: "improves balance, coordination, and spinal stability by working opposite sides of the body together."
-            },
-            "Step Ups": {
-                type: "reps", val: 10,
-                steps: [
-                    "Stand in front of a bottom stair step.",
-                    "Place your entire right foot firmly on the step.",
-                    "Press through your right heel to lift your left foot up to tap the step (or hover).",
-                    "Lower the left foot back to the floor gently.",
-                    "Complete all reps on one side, then switch."
-                ],
-                why: "Trains single-leg strength, which corrects muscular imbalances and significantly reduces the risk of falls."
-            },
-            "Wall Angels": {
-                type: "reps", val: 10,
-                steps: [
-                    "Stand with your back flat against a wall. Feet can be 6 inches away.",
-                    "Tuck your pelvis so your lower back touches the wall.",
-                    "Raise arms to a 'W' shape, trying to keep elbows and wrists touching the wall.",
-                    "Slide arms up as high as you can without losing contact with the wall.",
-                    "Slide back down to the 'W'."
-                ],
-                why: "Counteracts the 'hunched' posture common with age. Opens the chest and improves thoracic mobility."
-            },
-            "Single Leg Stand": {
-                type: "time", val: 30,
-                steps: [
-                    "Stand near a wall or sturdy chair for safety.",
-                    "Lift one foot slightly off the ground.",
-                    "Hold the position on one leg, keeping a slight bend in the standing knee.",
-                    "Use the wall/chair only if you start to tip.",
-                    "Focus your eyes on a fixed point to help balance."
-                ],
-                why: "Directly challenges and strengthens the balance systems in your ankles and inner ear."
+            "Glute Bridges": {
+                type: "reps", val: 15,
+                cues: ["Lying on back, knees bent", "Lift hips until body is straight line", "Squeeze glutes hard at top"],
+                mistakes: ["Arching lower back", "Pushing through toes (use heels)"],
+                tempo: "1 sec up, 2 sec hold, 2 sec down",
+                breath: "Exhale up, Inhale down"
             }
         };
 
-        const routinesData = [
-            {
-                id: 'A',
-                title: "Routine A: Foundation Strength",
-                desc: "A full-body routine focused on major muscle groups.",
-                benefits: [
-                    "Builds fundamental strength for daily tasks.",
-                    "Improves ability to get up/down from chairs.",
-                    "Strengthens core to protect the back."
-                ],
-                exercises: ["March in Place", "Wall Push-ups", "Chair Squats", "Plank Support", "Bird Dog"]
+        const routines = {
+            'morning_metabolism': {
+                name: "Morning Metabolism Spike",
+                focus: "Fat Loss",
+                exercises: ["Metabolic March", "Sit-to-Stand Intervals", "Metabolic March", "Doorway Rows", "Metabolic March"]
             },
-            {
-                id: 'B',
-                title: "Routine B: Mobility & Balance",
-                desc: "Focused on posture, stability, and joint health.",
-                benefits: [
-                    "Specifically targets fall prevention.",
-                    "Improves posture and spinal alignment.",
-                    "Corrects left/right imbalances."
-                ],
-                exercises: ["March in Place", "Step Ups", "Wall Angels", "Chair Squats", "Single Leg Stand"]
+            'strength_burn': {
+                name: "Full Body Burn",
+                focus: "Strength & Calorie Burn",
+                exercises: ["Chair Squats", "Wall Push-ups", "Metabolic March", "Glute Bridges", "Doorway Rows", "Chair Squats"]
+            },
+            'evening_mobility': {
+                name: "Evening Recovery",
+                focus: "Joint Health",
+                exercises: ["Glute Bridges", "Doorway Rows", "Metabolic March"] // Simplified for demo
             }
-        ];
+        };
 
-        /* --- 2. STATE MANAGEMENT --- */
-        const defaultState = {
+        /* --- 2. STATE & STORAGE --- */
+        let state = {
             user: { name: "", weight: 0 },
-            history: [],
-            weightLog: [],
+            logs: [], // { date: ISO, time: HH:MM, routine: ID }
+            weightHistory: [],
             onboarded: false
         };
 
-        let appState = JSON.parse(localStorage.getItem('SilverStrengthPro_v3')) || defaultState;
-
         let activeRoutine = null;
-        let activeIndex = 0;
-        let timerRef = null;
+        let actIndex = 0;
+        let timer = null;
         let timerVal = 0;
         let isPaused = false;
-        let chartRef = null;
+        let chart = null;
 
-        /* --- 3. INIT & NAVIGATION --- */
-        window.onload = function() {
-            if(!appState.onboarded) {
-                document.getElementById('view-onboarding').classList.remove('hidden');
+        /* --- 3. INIT --- */
+        window.onload = () => {
+            const saved = localStorage.getItem('SilverStrengthAI_v4');
+            if (saved) state = JSON.parse(saved);
+            
+            if (!state.onboarded) {
+                document.getElementById('screen-onboarding').classList.remove('hidden');
             } else {
-                initApp();
+                initDashboard();
             }
         };
 
-        function completeOnboarding() {
-            const name = document.getElementById('inp-name').value;
-            const weight = document.getElementById('inp-weight').value;
-            if(!name || !weight) return alert("Please fill in all fields.");
-
-            appState.user.name = name;
-            appState.user.weight = parseFloat(weight);
-            appState.weightLog.push({ date: new Date().toISOString().split('T')[0], weight: parseFloat(weight) });
-            appState.onboarded = true;
-            saveState();
-            
-            document.getElementById('view-onboarding').classList.add('hidden');
-            initApp();
+        function save() {
+            localStorage.setItem('SilverStrengthAI_v4', JSON.stringify(state));
         }
 
-        function initApp() {
-            document.getElementById('dash-greeting').innerText = `Hello, ${appState.user.name}`;
-            updateDashboard();
-            renderRoutinesList();
+        function finishOnboarding() {
+            const n = document.getElementById('inp-name').value;
+            const w = document.getElementById('inp-weight').value;
+            if(!n || !w) return alert("Required");
+            state.user.name = n;
+            state.user.weight = w;
+            state.weightHistory.push({date: new Date().toLocaleDateString(), weight: w});
+            state.onboarded = true;
+            save();
+            document.getElementById('screen-onboarding').classList.add('hidden');
+            initDashboard();
         }
 
-        function saveState() {
-            localStorage.setItem('SilverStrengthPro_v3', JSON.stringify(appState));
+        /* --- 4. SMART COACH LOGIC --- */
+        function initDashboard() {
+            document.getElementById('dash-greeting').innerText = `Hello, ${state.user.name}`;
+            document.getElementById('dash-date').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            document.getElementById('dash-weight').innerText = state.user.weight;
+            document.getElementById('dash-workouts').innerText = state.logs.length;
+
+            generateRecommendation();
         }
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        function generateRecommendation() {
+            const now = new Date();
+            const hour = now.getHours();
+            const todayStr = now.toISOString().split('T')[0];
             
-            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            // Check if user worked out today
+            const workoutsToday = state.logs.filter(l => l.date.startsWith(todayStr));
             
-            // Highlight nav
-            const map = { 'dashboard':0, 'routines':1, 'history':2, 'tracker':3 };
-            document.querySelectorAll('.nav-item')[map[tabName]].classList.add('active');
+            let recHTML = "";
+            let recRoutine = "";
 
-            if(tabName === 'dashboard') updateDashboard();
-            if(tabName === 'history') renderHistory();
-            if(tabName === 'tracker') renderTracker();
-        }
-
-        /* --- 4. DASHBOARD LOGIC --- */
-        function updateDashboard() {
-            document.getElementById('dash-streak').innerText = appState.history.length;
-            document.getElementById('dash-weight').innerText = appState.user.weight;
-            
-            const today = new Date().toISOString().split('T')[0];
-            const doneToday = appState.history.some(h => h.date === today);
-            const recArea = document.getElementById('recommendation-area');
-
-            if(doneToday) {
-                recArea.innerHTML = `
-                    <div style="text-align:center; padding:20px; color:var(--success);">
-                        <i class="fas fa-check-circle" style="font-size:2rem; margin-bottom:10px;"></i>
-                        <div style="font-weight:bold;">All done for today!</div>
-                        <div style="font-size:0.9rem;">Rest and recover.</div>
-                    </div>
-                `;
-            } else {
-                // Determine Routine based on date
-                const dayNum = new Date().getDate();
-                const r = (dayNum % 2 !== 0) ? routinesData[0] : routinesData[1];
-                
-                recArea.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <div style="font-weight:bold; font-size:1.1rem; color:var(--primary);">${r.title}</div>
-                            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">${r.exercises.length} Exercises • ~20 Mins</div>
+            if (workoutsToday.length === 0) {
+                // No workout yet today
+                if (hour < 11) {
+                    recRoutine = 'morning_metabolism';
+                    recHTML = `
+                        <div class="ai-badge">Morning Focus</div>
+                        <h2>Metabolic Jumpstart</h2>
+                        <div class="ai-reason">
+                            It's morning! This short routine uses interval movements to wake up your metabolism and burn more calories throughout the day.
                         </div>
-                        <button class="btn btn-accent" style="width:auto; padding:10px 20px;" onclick="startRoutine('${r.id}')">Start</button>
-                    </div>
-                `;
-            }
-        }
-
-        /* --- 5. ROUTINES PAGE LOGIC --- */
-        function renderRoutinesList() {
-            const list = document.getElementById('routines-list');
-            list.innerHTML = '';
-
-            routinesData.forEach(r => {
-                const el = document.createElement('div');
-                el.className = 'routine-card';
-                el.innerHTML = `
-                    <div class="routine-header" onclick="toggleRoutineDetails(this)">
-                        <span style="font-weight:bold; font-size:1.1rem;">${r.title}</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="routine-body">
-                        <p>${r.desc}</p>
-                        
-                        <div class="section-title">Health Benefits</div>
-                        <ul style="padding-left:20px; color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">
-                            ${r.benefits.map(b => `<li>${b}</li>`).join('')}
-                        </ul>
-
-                        <div class="section-title">Exercises</div>
-                        <div>
-                            ${r.exercises.map((ex, i) => `
-                                <div class="exercise-list-item">
-                                    <div class="ex-number">${i+1}</div>
-                                    <div style="font-size:0.95rem; font-weight:500;">${ex}</div>
-                                </div>
-                            `).join('')}
+                        <button class="btn btn-accent" style="margin-top:15px; background:white; color:var(--primary);" onclick="startWorkout('${recRoutine}')">Start Now</button>
+                    `;
+                } else if (hour >= 11 && hour < 18) {
+                    recRoutine = 'strength_burn';
+                    recHTML = `
+                        <div class="ai-badge">Afternoon Burn</div>
+                        <h2>Full Body Strength</h2>
+                        <div class="ai-reason">
+                            Your body temperature is highest now, making it the safest time for resistance training. Let's build muscle to burn fat.
                         </div>
-
-                        <button class="btn btn-primary" style="margin-top:20px;" onclick="startRoutine('${r.id}')">Start Routine</button>
-                    </div>
-                `;
-                list.appendChild(el);
-            });
-        }
-
-        function toggleRoutineDetails(header) {
-            const body = header.nextElementSibling;
-            const icon = header.querySelector('i');
-            
-            if(body.classList.contains('open')) {
-                body.classList.remove('open');
-                icon.classList.remove('fa-chevron-up');
-                icon.classList.add('fa-chevron-down');
+                        <button class="btn btn-accent" style="margin-top:15px; background:white; color:var(--primary);" onclick="startWorkout('${recRoutine}')">Start Now</button>
+                    `;
+                } else {
+                    recRoutine = 'evening_mobility';
+                    recHTML = `
+                        <div class="ai-badge">Evening Routine</div>
+                        <h2>Mobility & Digestion</h2>
+                        <div class="ai-reason">
+                            A light routine now helps digestion and prepares joints for sleep without spiking cortisol levels.
+                        </div>
+                        <button class="btn btn-accent" style="margin-top:15px; background:white; color:var(--primary);" onclick="startWorkout('${recRoutine}')">Start Now</button>
+                    `;
+                }
             } else {
-                body.classList.add('open');
-                icon.classList.remove('fa-chevron-down');
-                icon.classList.add('fa-chevron-up');
+                // User HAS worked out today
+                const lastType = workoutsToday[workoutsToday.length-1].routine;
+                if (lastType === 'morning_metabolism' && hour > 16) {
+                    // Double day suggestion
+                    recRoutine = 'evening_mobility';
+                    recHTML = `
+                        <div class="ai-badge" style="background:var(--success)">Great Job Today</div>
+                        <h2>Bonus: Evening Flow</h2>
+                        <div class="ai-reason">
+                            You crushed your morning session. Adding a 10-minute mobility flow now will double your results by keeping you active.
+                        </div>
+                        <button class="btn btn-success" style="margin-top:15px;" onclick="startWorkout('${recRoutine}')">Start Bonus</button>
+                    `;
+                } else {
+                    recHTML = `
+                        <div style="text-align:center;">
+                            <i class="fas fa-check-circle" style="font-size:3rem; color:var(--success);"></i>
+                            <h2>Daily Goal Met!</h2>
+                            <p style="opacity:0.8">Rest and hydrate. See you tomorrow.</p>
+                        </div>
+                    `;
+                }
             }
+
+            const box = document.getElementById('ai-suggestion-area');
+            box.className = 'ai-rec-box';
+            box.innerHTML = recHTML;
         }
 
-        /* --- 6. ACTIVE WORKOUT ENGINE --- */
-        function startRoutine(id) {
-            const r = routinesData.find(x => x.id === id);
-            activeRoutine = r;
-            activeIndex = 0;
-            document.getElementById('active-workout-view').classList.add('visible');
-            document.getElementById('act-routine-name').innerText = r.title;
-            loadActiveExercise();
+        /* --- 5. WORKOUT ENGINE --- */
+        function previewRoutine(id) {
+            if(confirm(`Start ${routines[id].name}?`)) startWorkout(id);
         }
 
-        function loadActiveExercise() {
-            if(activeIndex >= activeRoutine.exercises.length) {
+        function startWorkout(id) {
+            activeRoutine = routines[id];
+            actIndex = 0;
+            document.getElementById('view-active').classList.remove('hidden');
+            document.getElementById('act-title').innerText = activeRoutine.name;
+            loadExercise();
+        }
+
+        function loadExercise() {
+            if (actIndex >= activeRoutine.exercises.length) {
                 finishWorkout();
                 return;
             }
 
-            const exName = activeRoutine.exercises[activeIndex];
-            const exData = exerciseLibrary[exName];
+            const exName = activeRoutine.exercises[actIndex];
+            const data = library[exName];
 
-            // Render Text
+            document.getElementById('act-index').innerText = `${actIndex + 1} / ${activeRoutine.exercises.length}`;
             document.getElementById('act-name').innerText = exName;
-            document.getElementById('act-why').innerText = exData.why;
             
-            // Render Steps
-            const stepsList = document.getElementById('act-steps');
-            stepsList.innerHTML = exData.steps.map(s => `<li>${s}</li>`).join('');
+            // Populate Guides
+            const cuesList = document.getElementById('act-cues');
+            cuesList.innerHTML = data.cues.map(c => `<li>${c}</li>`).join('');
+            
+            const mistList = document.getElementById('act-mistakes');
+            mistList.innerHTML = data.mistakes.map(m => `<li>${m}</li>`).join('');
 
-            // Render Display Area (Timer/Reps)
-            const area = document.getElementById('act-display-area');
+            document.getElementById('act-tempo').innerText = data.tempo;
+            document.getElementById('act-breath').innerText = data.breath;
+
+            // Visual Area
+            const viz = document.getElementById('act-visual-area');
             const btn = document.getElementById('act-btn');
             
-            clearInterval(timerRef);
-            
-            if(exData.type === 'reps') {
-                area.innerHTML = `<div class="rep-display">${exData.val}<span style="font-size:1.5rem; color:var(--text-muted);"> reps</span></div>`;
+            clearInterval(timer);
+
+            if (data.type === 'reps') {
+                viz.innerHTML = `<div class="rep-big">${data.val}<span style="font-size:1.5rem"> reps</span></div>`;
                 btn.innerText = "Completed";
-                btn.onclick = nextExercise;
                 btn.className = "btn btn-success";
+                btn.onclick = nextExercise;
             } else {
-                timerVal = exData.val;
+                timerVal = data.val;
                 isPaused = false;
-                area.innerHTML = `<div class="timer-display" id="timer-val">00:${timerVal}</div>`;
+                viz.innerHTML = `<div class="timer-big" id="timer-disp">00:${timerVal}</div>`;
                 btn.innerText = "Start Timer";
                 btn.className = "btn btn-primary";
                 btn.onclick = toggleTimer;
             }
-
-            // Scroll to top
-            document.querySelector('.active-container').scrollIntoView();
         }
 
         function toggleTimer() {
             const btn = document.getElementById('act-btn');
-            if(btn.innerText === "Start Timer") {
+            if (btn.innerText === "Start Timer") {
                 btn.innerText = "Pause";
-                startTimer();
+                startTimerLoop();
             } else if (btn.innerText === "Pause") {
                 isPaused = true;
                 btn.innerText = "Resume";
@@ -632,17 +456,13 @@
             }
         }
 
-        function startTimer() {
-            timerRef = setInterval(() => {
-                if(!isPaused) {
+        function startTimerLoop() {
+            timer = setInterval(() => {
+                if (!isPaused) {
                     timerVal--;
-                    const min = Math.floor(timerVal/60);
-                    const sec = timerVal%60;
-                    document.getElementById('timer-val').innerText = 
-                        `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
-                    
-                    if(timerVal <= 0) {
-                        clearInterval(timerRef);
+                    document.getElementById('timer-disp').innerText = `00:${timerVal.toString().padStart(2,'0')}`;
+                    if (timerVal <= 0) {
+                        clearInterval(timer);
                         if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
                         nextExercise();
                     }
@@ -651,106 +471,79 @@
         }
 
         function nextExercise() {
-            activeIndex++;
-            loadActiveExercise();
+            actIndex++;
+            loadExercise();
         }
 
         function quitWorkout() {
-            if(confirm("Exit this workout?")) {
-                clearInterval(timerRef);
-                document.getElementById('active-workout-view').classList.remove('visible');
+            if(confirm("Quit?")) {
+                clearInterval(timer);
+                document.getElementById('view-active').classList.add('hidden');
             }
         }
 
         function finishWorkout() {
-            clearInterval(timerRef);
-            document.getElementById('active-workout-view').classList.remove('visible');
+            clearInterval(timer);
+            document.getElementById('view-active').classList.add('hidden');
             
-            const today = new Date().toISOString().split('T')[0];
-            appState.history.push({ date: today, routine: activeRoutine.id });
-            saveState();
-            
-            alert("Workout Complete!");
-            updateDashboard();
+            // Log it
+            state.logs.push({
+                date: new Date().toISOString(),
+                routine: Object.keys(routines).find(key => routines[key] === activeRoutine)
+            });
+            save();
+            initDashboard();
+            alert("Workout Complete! Weight loss progress logged.");
         }
 
-        /* --- 7. HISTORY / CHART LOGIC --- */
-        function renderHistory() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth();
-            
-            document.getElementById('cal-month-name').innerText = now.toLocaleString('default', { month: 'long', year: 'numeric' });
-            
-            const daysInMonth = new Date(year, month+1, 0).getDate();
-            const firstDayIndex = new Date(year, month, 1).getDay();
-            
-            const grid = document.getElementById('calendar-body');
-            grid.innerHTML = '';
-            
-            // Empty slots
-            for(let i=0; i<firstDayIndex; i++) {
-                grid.innerHTML += '<div></div>';
-            }
-            
-            // Days
-            for(let d=1; d<=daysInMonth; d++) {
-                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const isToday = dateStr === now.toISOString().split('T')[0];
-                const isDone = appState.history.some(h => h.date === dateStr);
-                
-                grid.innerHTML += `
-                    <div class="cal-cell ${isToday?'today':''} ${isDone?'done':''}">
-                        ${d}
-                    </div>
-                `;
+        /* --- 6. WEIGHT TRACKING --- */
+        function switchTab(tab) {
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-tracker').classList.add('hidden');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+            if (tab === 'dashboard') {
+                document.getElementById('view-dashboard').classList.remove('hidden');
+                document.querySelector('.nav-btn:nth-child(1)').classList.add('active');
+                initDashboard();
+            } else {
+                document.getElementById('view-tracker').classList.remove('hidden');
+                document.querySelector('.nav-btn:nth-child(2)').classList.add('active');
+                renderChart();
             }
         }
 
-        function renderTracker() {
+        function logWeight() {
+            const val = document.getElementById('weight-log-input').value;
+            if(!val) return;
+            state.user.weight = val;
+            state.weightHistory.push({ date: new Date().toLocaleDateString(), weight: val });
+            save();
+            document.getElementById('weight-log-input').value = "";
+            renderChart();
+            alert("Weight logged");
+        }
+
+        function renderChart() {
             const ctx = document.getElementById('weightChart').getContext('2d');
+            if (chart) chart.destroy();
             
-            const labels = appState.weightLog.map(l => l.date);
-            const data = appState.weightLog.map(l => l.weight);
-            
-            if(chartRef) chartRef.destroy();
-            
-            chartRef = new Chart(ctx, {
+            chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels: state.weightHistory.map(x => x.date),
                     datasets: [{
                         label: 'Weight',
-                        data: data,
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        data: state.weightHistory.map(x => x.weight),
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
                         fill: true,
                         tension: 0.3
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
+                options: { responsive: true, maintainAspectRatio: false }
             });
         }
-
-        function addWeightLog() {
-            const val = document.getElementById('tracker-input').value;
-            if(!val) return;
-            
-            const w = parseFloat(val);
-            const today = new Date().toISOString().split('T')[0];
-            
-            appState.weightLog.push({ date: today, weight: w });
-            appState.user.weight = w;
-            saveState();
-            
-            document.getElementById('tracker-input').value = '';
-            renderTracker();
-            alert("Weight Saved");
-        }
-
     </script>
 </body>
 </html>
