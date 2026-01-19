@@ -3,539 +3,532 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SilverStrength AI v6</title>
+    <title>SilverStrength v7</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
-            /* HIGH CONTRAST PALETTE */
-            --bg: #f1f5f9;            /* Light Grey Background */
-            --card: #ffffff;          /* Pure White Cards */
-            --primary: #1e293b;       /* Very Dark Slate (Text) */
-            --primary-light: #475569; /* Medium Slate (Subtext) */
-            --accent: #2563eb;        /* Bright Blue */
-            --accent-bg: #eff6ff;     /* Very Light Blue */
-            --success: #16a34a;       /* Green */
-            --border: #cbd5e1;        /* Distinct Borders */
+            --bg: #f8fafc; --card: #ffffff;
+            --text: #0f172a; --text-light: #475569;
+            --accent: #2563eb; --accent-light: #eff6ff;
+            --success: #16a34a; --danger: #dc2626;
+            --border: #cbd5e1;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--primary);
-            margin: 0;
-            padding: 0;
-            padding-bottom: 100px; /* Space for nav */
-            height: 100vh;
-        }
-
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
         .hidden { display: none !important; }
 
-        /* TYPOGRAPHY - INCREASED FOR READABILITY */
-        h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 5px 0; color: var(--primary); }
-        h2 { font-size: 1.4rem; font-weight: 700; margin: 25px 0 15px 0; color: var(--primary); border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 5px; }
-        h3 { font-size: 1.1rem; font-weight: 600; margin: 0 0 10px 0; color: var(--primary-light); }
-        p { color: var(--primary-light); line-height: 1.6; font-size: 1rem; margin-top: 0; }
+        /* TYPOGRAPHY */
+        h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 5px 0; color: var(--text); }
+        h2 { font-size: 1.4rem; font-weight: 700; margin: 25px 0 15px 0; border-bottom: 2px solid var(--accent); display: inline-block; }
+        h3 { font-size: 1.1rem; font-weight: 600; color: var(--text-light); margin-bottom: 5px; }
+        p { color: var(--text-light); line-height: 1.6; margin-top: 0; }
 
-        /* CARDS */
-        .card {
-            background: var(--card); border-radius: 16px; padding: 24px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
-
-        /* BUTTONS - HIGH VISIBILITY */
-        .btn { width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: 0.2s; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-accent { background: var(--accent); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-outline { background: white; border: 2px solid var(--primary); color: var(--primary); }
+        /* CARDS & UI */
+        .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 15px; }
+        .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .btn-primary { background: var(--text); color: white; }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-outline { background: white; border: 2px solid var(--text); color: var(--text); }
         
-        /* DASHBOARD GRID */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .stat-box { background: white; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
-        .stat-val { font-size: 1.8rem; font-weight: 800; color: var(--accent); }
-        .stat-lbl { font-size: 0.8rem; font-weight: 700; color: var(--primary-light); text-transform: uppercase; }
+        /* DASHBOARD */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .score-circle { width: 120px; height: 120px; border-radius: 50%; border: 8px solid var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px auto; }
+        .score-val { font-size: 2.5rem; font-weight: 900; color: var(--accent); line-height: 1; }
+        .score-label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; }
 
-        /* AI RECOMMENDATION BOX */
-        .ai-box {
-            background: linear-gradient(145deg, #1e293b 0%, #334155 100%);
-            color: white; border-radius: 16px; padding: 25px; position: relative;
-        }
-        .ai-badge {
-            background: var(--accent); font-size: 0.8rem; padding: 6px 12px; border-radius: 20px;
-            text-transform: uppercase; font-weight: bold; display: inline-block; margin-bottom: 15px;
-        }
-        .ai-text { color: #e2e8f0; font-size: 1rem; margin-bottom: 20px; }
-
-        /* SCHEDULE & LISTS */
-        .schedule-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border); align-items: center; }
-        .schedule-date { font-weight: bold; color: var(--primary); width: 60px; text-align: center; line-height: 1.2; }
-        .schedule-task { flex: 1; margin-left: 15px; }
-        .tag { font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
-        .tag-strength { background: #fee2e2; color: #991b1b; }
-        .tag-cardio { background: #dbeafe; color: #1e40af; }
-        .tag-mobility { background: #dcfce7; color: #166534; }
+        /* WEEKLY SCHEDULE LIST */
+        .day-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); opacity: 0.6; }
+        .day-row.active { opacity: 1; background: var(--accent-light); padding: 15px; border-radius: 10px; border-bottom: none; margin: 5px 0; border: 1px solid #bfdbfe; }
+        .day-row.done { opacity: 1; }
+        .day-row.done .status-icon { color: var(--success); }
+        
+        /* LIBRARY */
+        .lib-item { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .lib-tag { background: #e2e8f0; padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; font-weight: bold; }
+        .lib-benefit { background: #f0fdf4; border-left: 4px solid var(--success); padding: 10px; margin-top: 10px; font-size: 0.9rem; color: #14532d; }
 
         /* ACTIVE WORKOUT */
-        #view-active {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff;
-            z-index: 100; overflow-y: auto; display: flex; flex-direction: column;
-        }
-        .active-header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
-        .timer-display { font-size: 5rem; font-weight: 900; color: var(--primary); text-align: center; margin: 20px 0; font-variant-numeric: tabular-nums; }
+        #view-active { position: fixed; inset: 0; background: white; z-index: 100; overflow-y: auto; display: flex; flex-direction: column; }
+        .active-header { padding: 15px; background: #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .timer-big { font-size: 5rem; font-weight: 900; text-align: center; color: var(--text); font-variant-numeric: tabular-nums; margin: 20px 0; }
         
-        /* FORM CHECK CUES */
-        .cue-box { background: #f0f9ff; border-left: 6px solid var(--accent); padding: 15px; margin: 20px 0; border-radius: 0 12px 12px 0; }
-        .cue-list { margin: 0; padding-left: 20px; font-size: 1.05rem; line-height: 1.6; }
-
-        /* NAV BAR */
-        .nav-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 80px;
-            background: white; border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: center; z-index: 50;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
-        }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center; border: none; background: none;
-            color: var(--primary-light); font-size: 0.75rem; font-weight: 600; cursor: pointer; width: 100%;
-        }
-        .nav-item.active { color: var(--accent); }
-        .nav-item i { font-size: 1.5rem; margin-bottom: 5px; }
-
-        /* ONBOARDING */
-        #view-onboarding { position: fixed; inset: 0; background: white; z-index: 200; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
-        .std-input { width: 100%; padding: 16px; margin-bottom: 20px; border: 2px solid var(--border); border-radius: 10px; font-size: 1.1rem; }
+        /* CUES & TEMPO */
+        .cue-box { background: #fff7ed; border-left: 5px solid #f97316; padding: 15px; margin: 20px 0; }
+        .cue-list { padding-left: 20px; margin: 0; line-height: 1.6; }
+        
+        /* NAV */
+        .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; z-index: 50; }
+        .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-light); font-size: 0.75rem; font-weight: 600; }
+        .nav-btn.active { color: var(--accent); }
+        .nav-btn i { font-size: 1.5rem; margin-bottom: 4px; }
+        
+        .std-input { width: 100%; padding: 15px; border: 2px solid var(--border); border-radius: 10px; font-size: 1.1rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="view-onboarding" class="hidden">
-        <h1 style="text-align: center;">SilverStrength AI</h1>
-        <p style="text-align: center; margin-bottom: 40px;">Smart, high-contrast, personalized.</p>
+    <div id="view-onboarding" class="container hidden" style="height:100vh; display:flex; flex-direction:column; justify-content:center;">
+        <h1 style="text-align:center;">SilverStrength</h1>
+        <p style="text-align:center; margin-bottom:30px;">Structured weekly plans for weight loss.</p>
         <label><b>First Name</b></label>
-        <input type="text" id="inp-name" class="std-input" placeholder="e.g. James">
+        <input type="text" id="inp-name" class="std-input">
         <label><b>Current Weight (lbs)</b></label>
-        <input type="number" id="inp-weight" class="std-input" placeholder="e.g. 200">
-        <button class="btn btn-accent" onclick="finishOnboarding()">Start My Journey</button>
+        <input type="number" id="inp-weight" class="std-input">
+        <button class="btn btn-accent" onclick="finishOnboarding()">Create Weekly Schedule</button>
     </div>
 
     <div id="view-dashboard" class="container">
         <div class="header">
             <div>
                 <h1 id="dash-greeting">Hello</h1>
-                <p id="dash-date" style="font-weight: 600;">Date</p>
+                <p id="dash-date">Date</p>
             </div>
-            <div style="background:var(--primary); width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white;">
-                <i class="fas fa-user"></i>
-            </div>
+            <div style="background:var(--text); color:white; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="fas fa-user"></i></div>
         </div>
 
-        <div class="stat-grid">
-            <div class="stat-box">
-                <div class="stat-val" id="dash-weight">--</div>
-                <div class="stat-lbl">Weight (lbs)</div>
+        <div id="sunday-card" class="card hidden" style="border: 2px solid var(--accent);">
+            <h2 style="margin-top:0; border:none; text-align:center;">Weekly Report Card</h2>
+            <div class="score-circle">
+                <span class="score-val" id="week-score">0%</span>
+                <span class="score-label">Adherence</span>
             </div>
-            <div class="stat-box">
-                <div class="stat-val" id="dash-activity">0</div>
-                <div class="stat-lbl">Weekly Mins</div>
-            </div>
+            <p style="text-align:center;">Time to weigh in to unlock next week.</p>
+            <input type="number" id="sunday-weight" class="std-input" placeholder="Weight (lbs)">
+            <button class="btn btn-accent" onclick="completeWeek()">Log & Start New Week</button>
         </div>
 
-        <div id="ai-rec-container"></div>
+        <div id="normal-dash">
+            <div class="card" id="today-card">
+                </div>
 
-        <h2><i class="fas fa-plus-circle"></i> Log External Activity</h2>
-        <div class="card">
-            <p>Did you exercise outside the app?</p>
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <select id="ext-type" class="std-input" style="margin:0; flex:2;">
-                    <option value="Walking">Walking</option>
-                    <option value="Golf">Golf</option>
-                    <option value="Swimming">Swimming</option>
-                    <option value="Cycling">Cycling</option>
-                    <option value="Gardening">Gardening</option>
-                    <option value="Tennis">Tennis</option>
-                </select>
-                <input type="number" id="ext-mins" class="std-input" placeholder="Mins" style="margin:0; flex:1;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div class="card" style="text-align:center; padding:15px;">
+                    <div style="font-size:1.5rem; font-weight:800; color:var(--text);" id="dash-weight">--</div>
+                    <div style="font-size:0.7rem; font-weight:bold; text-transform:uppercase; color:var(--text-light);">Weight</div>
+                </div>
+                <div class="card" style="text-align:center; padding:15px;">
+                    <div style="font-size:1.5rem; font-weight:800; color:var(--success);" id="dash-activity">0</div>
+                    <div style="font-size:0.7rem; font-weight:bold; text-transform:uppercase; color:var(--text-light);">Mins This Week</div>
+                </div>
             </div>
-            <button class="btn btn-outline" onclick="logExternalActivity()">Log Activity</button>
+
+            <h3>Log Extra Activity</h3>
+            <div class="card">
+                <div style="display:flex; gap:10px;">
+                    <select id="ext-type" class="std-input" style="margin:0; flex:2;">
+                        <option>Walking</option><option>Golf</option><option>Swimming</option><option>Pickleball</option><option>Gardening</option>
+                    </select>
+                    <input type="number" id="ext-mins" class="std-input" placeholder="Min" style="margin:0; flex:1;">
+                </div>
+                <button class="btn btn-outline" style="margin-top:10px;" onclick="logExternal()">Log Activity</button>
+            </div>
         </div>
     </div>
 
     <div id="view-schedule" class="container hidden">
         <div class="header">
-            <h1>Future Plan</h1>
-            <button class="btn btn-primary" style="width: auto; padding: 10px 15px; font-size: 0.9rem;" onclick="exportToCalendar()">
-                <i class="fas fa-calendar-plus"></i> Export to Apple Cal
+            <h1>This Week</h1>
+            <button class="btn btn-primary" style="width:auto; padding:8px 15px; font-size:0.8rem;" onclick="exportCalendar()">
+                <i class="fas fa-calendar-export"></i> Export
             </button>
         </div>
-        <div class="card" id="schedule-list">
+        <div class="card" id="week-list">
             </div>
-        <p style="font-size:0.9rem; text-align:center;">
-            <i class="fas fa-info-circle"></i> This schedule adapts based on your fatigue.
-        </p>
     </div>
 
-    <div id="view-tracker" class="container hidden">
-        <h1>Progress Tracker</h1>
-        <div class="card">
-            <canvas id="weightChart" style="height:250px;"></canvas>
-        </div>
-        <h2>Add Weight Log</h2>
-        <div class="card" style="display:flex; gap:10px;">
-            <input type="number" id="weight-input" class="std-input" style="margin:0;" placeholder="lbs">
-            <button class="btn btn-primary" style="width:auto;" onclick="logWeight()">Save</button>
-        </div>
-        <h2>History</h2>
-        <div class="card" id="history-list"></div>
+    <div id="view-library" class="container hidden">
+        <h1>Exercise Guide</h1>
+        <p>Detailed breakdown and benefits.</p>
+        <div class="card" id="lib-list">
+            </div>
     </div>
 
     <div id="view-active" class="hidden">
         <div class="active-header">
-            <button class="btn btn-outline" style="width:auto; padding:8px 15px; margin:0;" onclick="quitWorkout()">Quit</button>
-            <strong id="act-routine-title" style="font-size:1.1rem;">Routine</strong>
+            <button class="btn btn-outline" style="width:auto; margin:0; padding:8px 15px;" onclick="quitWorkout()">Quit</button>
+            <strong id="act-routine">Routine</strong>
             <div style="width:60px"></div>
         </div>
-
-        <div style="padding: 20px; padding-bottom: 120px;">
-            <div style="text-align: center;">
-                <span style="background: var(--primary); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">EXERCISE <span id="act-index">1</span></span>
-                <h1 id="act-name" style="font-size: 2.2rem; line-height: 1.1; margin-top: 15px;">Name</h1>
+        <div style="padding:20px; padding-bottom:100px;">
+            <div style="text-align:center;">
+                <span class="lib-tag">Exercise <span id="act-idx">1</span></span>
+                <h1 id="act-name" style="margin-top:10px; font-size:2.2rem;">Name</h1>
             </div>
 
             <div id="act-viz"></div>
 
             <div class="cue-box">
-                <div style="color:var(--accent); font-weight:bold; text-transform:uppercase; font-size:0.85rem; margin-bottom:10px;">
-                    <i class="fas fa-check-circle"></i> Perfect Form
-                </div>
+                <strong><i class="fas fa-check-circle"></i> Perfect Form</strong>
                 <ul id="act-cues" class="cue-list"></ul>
             </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:20px;">
-                <div style="background: #f8fafc; padding:15px; border-radius:12px; text-align:center; border:1px solid var(--border);">
-                    <div style="font-size:0.75rem; font-weight:bold; color:var(--primary-light); text-transform:uppercase;">Tempo</div>
-                    <div id="act-tempo" style="font-weight:bold; color:var(--primary); font-size:1.1rem;">2-0-2</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <div style="background:#f1f5f9; padding:10px; border-radius:10px; text-align:center;">
+                    <small>TEMPO</small>
+                    <div id="act-tempo" style="font-weight:bold;">2-0-2</div>
                 </div>
-                <div style="background: #f8fafc; padding:15px; border-radius:12px; text-align:center; border:1px solid var(--border);">
-                    <div style="font-size:0.75rem; font-weight:bold; color:var(--primary-light); text-transform:uppercase;">Breathing</div>
-                    <div id="act-breath" style="font-weight:bold; color:var(--primary); font-size:1.1rem;">Exhale Up</div>
+                <div style="background:#f1f5f9; padding:10px; border-radius:10px; text-align:center;">
+                    <small>BREATH</small>
+                    <div id="act-breath" style="font-weight:bold;">Exhale Up</div>
                 </div>
             </div>
 
-            <button class="btn btn-success" id="act-btn" style="margin-top: 30px; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.3);" onclick="nextExercise()">Start Exercise</button>
+            <button class="btn btn-success" id="act-btn" style="margin-top:20px; padding:20px; font-size:1.2rem;" onclick="nextExercise()">Start</button>
         </div>
     </div>
 
-    <div class="nav-bar">
-        <button class="nav-item active" onclick="switchTab('dashboard')"><i class="fas fa-home"></i>Home</button>
-        <button class="nav-item" onclick="switchTab('schedule')"><i class="fas fa-calendar-alt"></i>Plan</button>
-        <button class="nav-item" onclick="switchTab('tracker')"><i class="fas fa-chart-line"></i>Track</button>
+    <div class="nav">
+        <button class="nav-btn active" onclick="switchTab('dashboard')"><i class="fas fa-home"></i>Home</button>
+        <button class="nav-btn" onclick="switchTab('schedule')"><i class="fas fa-calendar-week"></i>Schedule</button>
+        <button class="nav-btn" onclick="switchTab('library')"><i class="fas fa-book-open"></i>Guide</button>
     </div>
 
     <script>
-        /* --- 1. CONFIG & DATA --- */
+        /* --- 1. DATA --- */
         const library = {
-            "Metabolic March": { type: "time", val: 60, cues: ["Knees up to hip height", "Pump arms cheek-to-cheek", "Keep chest tall"], tempo: "Fast & Rhythmic", breath: "Inhale 2 steps, Exhale 2 steps" },
-            "Chair Squats": { type: "reps", val: 12, cues: ["Tap glutes to chair, don't sit", "Weight in heels", "Chest up"], tempo: "3s Down, 1s Up (Fast)", breath: "Inhale down, Exhale up" },
-            "Wall Push-ups": { type: "reps", val: 12, cues: ["Body in straight plank line", "Hands chest height", "Elbows tucked 45°"], tempo: "2s Down, 1s Pause, 2s Up", breath: "Inhale down, Exhale push" },
-            "Sit-to-Stand": { type: "time", val: 45, cues: ["Full sit, Full stand", "Don't use hands if possible", "Constant motion"], tempo: "Steady Pace", breath: "Rhythmic" },
-            "Doorway Rows": { type: "reps", val: 15, cues: ["Hold doorframe, lean back", "Squeeze shoulder blades", "Keep hips straight"], tempo: "1s Pull, 2s Squeeze, 3s Back", breath: "Exhale pull, Inhale back" },
-            "Glute Bridges": { type: "reps", val: 15, cues: ["Lift hips to ceiling", "Squeeze glutes hard", "Push through heels"], tempo: "1s Up, 2s Hold, 2s Down", breath: "Exhale up, Inhale down" },
-            "Bird Dog": { type: "reps", val: 10, cues: ["Extend opposite arm/leg", "Keep back flat like table", "Don't rotate hips"], tempo: "Slow & Controlled", breath: "Exhale extend, Inhale return" }
+            "Metabolic March": {
+                desc: "A high-intensity variation of marching in place. Knees must go high, arms must swing vigorously.",
+                steps: ["Stand tall, feet hip-width.", "Lift right knee to hip height.", "Simultaneously swing left arm cheek-to-cheek.", "Switch rapidly but smoothly.", "Land softly on balls of feet."],
+                benefit: "Safely elevates heart rate to burn calories without the joint impact of running. Improves coordination.",
+                type: "time", val: 60, tempo: "Fast Rhythm", breath: "Rhythmic (In-In-Out-Out)"
+            },
+            "Chair Squats": {
+                desc: "Sitting down and standing up from a chair without using hands.",
+                steps: ["Stand in front of sturdy chair.", "Feet shoulder-width apart.", "Lower hips back until you tap the seat.", "Drive through heels to stand up explosively.", "Keep chest up throughout."],
+                benefit: "Crucial for longevity. Strengthens quads and glutes to protect knees and ensure independence.",
+                type: "reps", val: 12, tempo: "3s Down, 1s Up", breath: "Inhale Down, Exhale Up"
+            },
+            "Wall Push-ups": {
+                desc: "A push-up performed against a wall to reduce gravity load.",
+                steps: ["Stand arm-length from wall.", "Hands at chest height, shoulder-width.", "Keep body straight (no sagging hips).", "Lower nose to wall.", "Push back to start."],
+                benefit: "Builds upper body bone density and chest strength without wrist strain.",
+                type: "reps", val: 12, tempo: "2s Down, 1s Pause, 2s Up", breath: "Inhale Down, Exhale Push"
+            },
+            "Doorway Rows": {
+                desc: "Using a doorframe to perform a pulling motion.",
+                steps: ["Stand in open doorway.", "Grip frame with both hands.", "Lean back, straightening arms.", "Pull chest through the frame squeezing shoulder blades.", "Control the release back."],
+                benefit: "Fixes 'slumped' posture by strengthening upper back. Counteracts gravity's pull.",
+                type: "reps", val: 15, tempo: "1s Pull, 2s Squeeze, 3s Release", breath: "Exhale Pull, Inhale Release"
+            },
+            "Glute Bridges": {
+                desc: "Lying on back, lifting hips.",
+                steps: ["Lie on back, knees bent, feet flat.", "Press heels into floor.", "Lift hips until body is a straight line from shoulder to knee.", "Squeeze glutes hard at top.", "Lower slowly."],
+                benefit: "Directly targets glutes to support the lower back and prevent hip pain.",
+                type: "reps", val: 15, tempo: "1s Up, 2s Squeeze, 2s Down", breath: "Exhale Up, Inhale Down"
+            },
+            "Bird Dog": {
+                desc: "On hands and knees, extending opposite limbs.",
+                steps: ["Start on all fours, back flat.", "Extend right arm forward and left leg back.", "Hold for 2 seconds without rotating hips.", "Return and switch sides."],
+                benefit: "The gold standard for core stability and spinal health. Prevents back injuries.",
+                type: "reps", val: 10, tempo: "Slow & Controlled", breath: "Exhale Extend, Inhale Return"
+            }
         };
 
         const routines = {
-            'morning': { title: "Morning Metabolism", type: "Cardio", exercises: ["Metabolic March", "Sit-to-Stand", "Metabolic March", "Doorway Rows"] },
-            'strength': { title: "Full Body Strength", type: "Strength", exercises: ["Chair Squats", "Wall Push-ups", "Metabolic March", "Glute Bridges", "Doorway Rows"] },
-            'mobility': { title: "Active Recovery", type: "Mobility", exercises: ["Glute Bridges", "Doorway Rows", "Metabolic March", "Bird Dog"] }
+            'Strength A': { type: 'Strength', duration: 25, exercises: ["Chair Squats", "Wall Push-ups", "Metabolic March", "Glute Bridges", "Doorway Rows"] },
+            'Cardio B': { type: 'Cardio', duration: 20, exercises: ["Metabolic March", "Chair Squats", "Metabolic March", "Doorway Rows", "Metabolic March"] },
+            'Mobility C': { type: 'Mobility', duration: 15, exercises: ["Glute Bridges", "Bird Dog", "Doorway Rows", "Metabolic March"] }
         };
 
+        /* --- 2. STATE --- */
         let appState = {
             user: { name: "", weight: 0 },
-            logs: [], // { date: ISO, type: 'App'|'External', name: 'Strength', duration: 20 }
-            weightLog: [],
+            weekPlan: [], // [{date, day, routineKey, completed, type}]
+            logs: [],
             onboarded: false
         };
 
-        let audioCtx = null; // For calming noise
+        let audioCtx = null;
 
-        /* --- 2. INIT & NAV --- */
+        /* --- 3. LOGIC --- */
         window.onload = () => {
-            const saved = localStorage.getItem('SilverStrength_v6');
+            const saved = localStorage.getItem('SilverStrength_v7');
             if(saved) appState = JSON.parse(saved);
-            
+
             if(!appState.onboarded) document.getElementById('view-onboarding').classList.remove('hidden');
-            else initApp();
+            else {
+                checkWeeklyPlan();
+                initApp();
+            }
         };
 
-        function saveData() { localStorage.setItem('SilverStrength_v6', JSON.stringify(appState)); }
+        function save() { localStorage.setItem('SilverStrength_v7', JSON.stringify(appState)); }
 
         function finishOnboarding() {
             const n = document.getElementById('inp-name').value;
             const w = document.getElementById('inp-weight').value;
-            if(!n || !w) return alert("Please fill all fields");
+            if(!n||!w) return alert("Required");
             appState.user.name = n;
-            appState.user.weight = parseFloat(w);
-            appState.weightLog.push({ date: new Date().toISOString().split('T')[0], weight: parseFloat(w) });
+            appState.user.weight = w;
             appState.onboarded = true;
-            saveData();
+            generateWeek();
+            save();
             document.getElementById('view-onboarding').classList.add('hidden');
             initApp();
         }
 
+        // GENERATE FIXED WEEKLY SCHEDULE
+        function generateWeek() {
+            // Logic: Mon=Strength, Tue=Cardio, Wed=Mobility, Thu=Strength, Fri=Cardio, Sat=Active, Sun=Rest
+            const plan = [];
+            const today = new Date();
+            // Align to Monday if possible, or just start today for v1 simplicity
+            // Let's just generate next 7 days starting today
+            const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            
+            for(let i=0; i<7; i++) {
+                let d = new Date();
+                d.setDate(today.getDate() + i);
+                let dayNum = d.getDay();
+                let rKey = null;
+
+                if(dayNum === 1 || dayNum === 4) rKey = 'Strength A';
+                else if(dayNum === 2 || dayNum === 5) rKey = 'Cardio B';
+                else if(dayNum === 3 || dayNum === 6) rKey = 'Mobility C';
+                // Sun (0) is rest, null key
+
+                plan.push({
+                    date: d.toISOString().split('T')[0],
+                    dayName: days[dayNum],
+                    routineKey: rKey,
+                    completed: false
+                });
+            }
+            appState.weekPlan = plan;
+        }
+
+        function checkWeeklyPlan() {
+            // If plan is empty or old, handle it.
+            // For this strict version, we check if today is > last day of plan
+            if(!appState.weekPlan.length) generateWeek();
+            else {
+                const lastDate = new Date(appState.weekPlan[6].date);
+                const today = new Date();
+                // If today is way past the plan, reset
+                if(today > lastDate && today.toDateString() !== lastDate.toDateString()) {
+                   // Ideally we force a sunday review, but for failsafe:
+                   generateWeek(); 
+                }
+            }
+        }
+
         function initApp() {
             document.getElementById('dash-greeting').innerText = `Hello, ${appState.user.name}`;
-            document.getElementById('dash-date').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-            updateDashboard();
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(`view-${tab}`).classList.remove('hidden');
-            
-            const map = { 'dashboard':0, 'schedule':1, 'tracker':2 };
-            document.querySelectorAll('.nav-item')[map[tab]].classList.add('active');
-
-            if(tab === 'dashboard') updateDashboard();
-            if(tab === 'schedule') renderSchedule();
-            if(tab === 'tracker') renderTracker();
-        }
-
-        /* --- 3. ALGORITHM & DASHBOARD --- */
-        function calculateWeeklyActivity() {
-            // Sum logs from last 7 days
-            const cutoff = new Date();
-            cutoff.setDate(cutoff.getDate() - 7);
-            return appState.logs
-                .filter(l => new Date(l.date) >= cutoff)
-                .reduce((acc, curr) => acc + curr.duration, 0);
-        }
-
-        function updateDashboard() {
+            document.getElementById('dash-date').innerText = new Date().toDateString();
             document.getElementById('dash-weight').innerText = appState.user.weight;
-            const weeklyMins = calculateWeeklyActivity();
-            document.getElementById('dash-activity').innerText = weeklyMins;
-
-            // --- SMART ALGORITHM ---
-            const today = new Date().toISOString().split('T')[0];
-            const hour = new Date().getHours();
             
-            // 1. Calculate Daily Fatigue
-            const dailyLogs = appState.logs.filter(l => l.date === today);
-            const dailyMins = dailyLogs.reduce((acc, curr) => acc + curr.duration, 0);
+            // Calculate Total Activity
+            const total = appState.logs.reduce((acc,cur) => acc + cur.duration, 0);
+            document.getElementById('dash-activity').innerText = total;
 
-            const aiContainer = document.getElementById('ai-rec-container');
-            let recHTML = "";
+            renderDashboard();
+            renderSchedule();
+            renderLibrary();
+        }
 
-            if (dailyMins > 45) {
-                // User has done a lot today (External or App)
-                recHTML = `
-                    <div class="ai-box" style="background:linear-gradient(145deg, #166534 0%, #15803d 100%);">
-                        <div class="ai-badge" style="background:#dcfce7; color:#166534;">High Activity Detected</div>
-                        <h2 style="color:white; margin-top:0; border:none;">Recovery Recommended</h2>
-                        <p class="ai-text">You've logged ${dailyMins} mins today. Great job! Let's focus on recovery to prevent fatigue.</p>
-                        <button class="btn btn-outline" style="background:white; color:#166534; border:none;" onclick="startRoutine('mobility')">Start Mobility Flow</button>
-                    </div>
-                `;
+        function switchTab(t) {
+            document.querySelectorAll('.container').forEach(c=>c.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+            document.getElementById(`view-${t}`).classList.remove('hidden');
+            
+            const map = {'dashboard':0, 'schedule':1, 'library':2};
+            document.querySelectorAll('.nav-btn')[map[t]].classList.add('active');
+        }
+
+        /* --- DASHBOARD LOGIC --- */
+        function renderDashboard() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const dayNum = new Date().getDay();
+
+            // Sunday Check
+            if(dayNum === 0) {
+                document.getElementById('normal-dash').classList.add('hidden');
+                document.getElementById('sunday-card').classList.remove('hidden');
+                
+                // Calc Score
+                const scheduled = appState.weekPlan.filter(d => d.routineKey).length;
+                const done = appState.weekPlan.filter(d => d.completed).length;
+                const score = scheduled === 0 ? 100 : Math.round((done/scheduled)*100);
+                document.getElementById('week-score').innerText = score + "%";
             } else {
-                // Standard Time-Based Logic
-                if (hour < 11) {
-                    recHTML = `
-                        <div class="ai-box">
-                            <div class="ai-badge">Morning Protocol</div>
-                            <h2 style="color:white; margin-top:0; border:none;">Metabolic Boost</h2>
-                            <p class="ai-text">Jumpstart your calorie burning for the day with this interval session.</p>
-                            <button class="btn btn-accent" onclick="startRoutine('morning')">Start Routine</button>
-                        </div>`;
-                } else if (hour >= 11 && hour < 18) {
-                    recHTML = `
-                        <div class="ai-box">
-                            <div class="ai-badge">Peak Strength Time</div>
-                            <h2 style="color:white; margin-top:0; border:none;">Full Body Strength</h2>
-                            <p class="ai-text">Your body temp is ideal for building muscle now.</p>
-                            <button class="btn btn-accent" onclick="startRoutine('strength')">Start Routine</button>
-                        </div>`;
+                document.getElementById('normal-dash').classList.remove('hidden');
+                document.getElementById('sunday-card').classList.add('hidden');
+
+                // Today's Task
+                const task = appState.weekPlan.find(d => d.date === todayStr);
+                const container = document.getElementById('today-card');
+                
+                if(!task) {
+                    container.innerHTML = "<h3>Planning...</h3>";
+                    return;
+                }
+
+                if(!task.routineKey) {
+                    container.innerHTML = `
+                        <h2>Rest Day</h2>
+                        <p>Relax and recover. Light walking is allowed.</p>
+                        <div style="background:#f0fdf4; color:#166534; padding:10px; border-radius:10px; text-align:center;">
+                            <i class="fas fa-couch"></i> Active Recovery
+                        </div>
+                    `;
+                } else if(task.completed) {
+                    container.innerHTML = `
+                        <div style="text-align:center; padding:20px;">
+                            <i class="fas fa-check-circle" style="font-size:4rem; color:var(--success);"></i>
+                            <h2>Complete!</h2>
+                            <p>Great job today.</p>
+                        </div>
+                    `;
                 } else {
-                    recHTML = `
-                        <div class="ai-box">
-                            <div class="ai-badge">Evening Wind Down</div>
-                            <h2 style="color:white; margin-top:0; border:none;">Active Recovery</h2>
-                            <p class="ai-text">Gentle movement to aid sleep and digestion.</p>
-                            <button class="btn btn-accent" onclick="startRoutine('mobility')">Start Routine</button>
-                        </div>`;
+                    const r = routines[task.routineKey];
+                    container.innerHTML = `
+                        <h3 style="text-transform:uppercase; font-size:0.8rem;">Today's Priority</h3>
+                        <h2 style="margin-top:5px; border:none;">${task.routineKey}</h2>
+                        <p>${r.exercises.length} Exercises • ${r.duration} Mins</p>
+                        <div style="display:flex; gap:10px; margin-bottom:15px;">
+                            <span class="lib-tag" style="background:#dbeafe; color:#1e40af">${r.type}</span>
+                            <span class="lib-tag">Weight Loss</span>
+                        </div>
+                        <button class="btn btn-accent" onclick="startWorkout('${task.routineKey}')">Start Workout</button>
+                    `;
                 }
             }
-            aiContainer.innerHTML = recHTML;
         }
 
-        /* --- 4. LOGGING --- */
-        function logExternalActivity() {
-            const type = document.getElementById('ext-type').value;
+        function completeWeek() {
+            const w = document.getElementById('sunday-weight').value;
+            if(!w) return alert("Please log weight.");
+            appState.user.weight = w;
+            appState.logs.push({date: new Date().toISOString(), duration: 0, type: 'Weigh In'});
+            // Generate NEW week
+            generateWeek();
+            save();
+            location.reload(); // Refresh to reset view
+        }
+
+        function logExternal() {
             const mins = parseFloat(document.getElementById('ext-mins').value);
             if(!mins) return;
-            
             appState.logs.push({
-                date: new Date().toISOString().split('T')[0],
-                type: 'External',
-                name: type,
-                duration: mins
+                date: new Date().toISOString(),
+                duration: mins,
+                type: document.getElementById('ext-type').value
             });
-            saveData();
-            document.getElementById('ext-mins').value = "";
-            alert("Activity Logged! Algorithm updated.");
-            updateDashboard();
+            save();
+            alert("Activity Logged!");
+            initApp();
         }
 
-        function logWeight() {
-            const val = parseFloat(document.getElementById('weight-input').value);
-            if(!val) return;
-            appState.user.weight = val;
-            appState.weightLog.push({ date: new Date().toISOString().split('T')[0], weight: val });
-            saveData();
-            document.getElementById('weight-input').value = "";
-            renderTracker();
-        }
-
-        /* --- 5. SCHEDULE & EXPORT --- */
+        /* --- SCHEDULE & EXPORT --- */
         function renderSchedule() {
-            const list = document.getElementById('schedule-list');
+            const list = document.getElementById('week-list');
             list.innerHTML = "";
-            const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-            const today = new Date();
+            const todayStr = new Date().toISOString().split('T')[0];
 
-            for(let i=0; i<7; i++) {
-                const d = new Date(today);
-                d.setDate(today.getDate() + i);
-                const dayName = days[d.getDay()];
-                const dateNum = d.getDate();
+            appState.weekPlan.forEach(day => {
+                const isToday = day.date === todayStr;
+                const status = day.completed ? '<i class="fas fa-check-circle status-icon"></i>' : (day.routineKey ? '<i class="far fa-circle"></i>' : '-');
+                const title = day.routineKey || "Rest Day";
                 
-                // Logic for future schedule
-                let task = "Full Body Strength";
-                let tagClass = "tag-strength";
-                
-                // Example Logic: Mon/Wed/Fri = Strength, Tue/Thu = Cardio, Sat = Ext, Sun = Rest
-                if (d.getDay() === 1 || d.getDay() === 3 || d.getDay() === 5) {
-                    task = "Full Body Strength"; tagClass = "tag-strength";
-                } else if (d.getDay() === 2 || d.getDay() === 4) {
-                    task = "Morning Metabolism"; tagClass = "tag-cardio";
-                } else {
-                    task = "Mobility / Active Rest"; tagClass = "tag-mobility";
-                }
-
                 list.innerHTML += `
-                    <div class="schedule-row">
-                        <div class="schedule-date">
-                            <div style="font-size:0.8rem; text-transform:uppercase; color:var(--primary-light)">${dayName}</div>
-                            <div style="font-size:1.2rem;">${dateNum}</div>
+                    <div class="day-row ${isToday?'active':''} ${day.completed?'done':''}">
+                        <div style="width:50px; text-align:center;">
+                            <div style="font-weight:bold; font-size:0.8rem; text-transform:uppercase;">${day.dayName}</div>
+                            <div style="font-size:0.7rem;">${day.date.slice(5)}</div>
                         </div>
-                        <div class="schedule-task">
-                            <div style="font-weight:bold;">${task}</div>
-                            <span class="tag ${tagClass}">${20} mins</span>
+                        <div style="flex:1; padding-left:15px;">
+                            <div style="font-weight:bold;">${title}</div>
+                            <div style="font-size:0.8rem; color:var(--text-light);">
+                                ${day.routineKey ? routines[day.routineKey].duration + ' mins • ' + routines[day.routineKey].type : 'Recovery'}
+                            </div>
                         </div>
+                        <div style="font-size:1.5rem; color:#cbd5e1;">${status}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function exportCalendar() {
+            let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//SilverStrength//EN\n";
+            
+            appState.weekPlan.forEach(day => {
+                if(!day.routineKey) return;
+                const r = routines[day.routineKey];
+                
+                // Format Date: YYYYMMDD
+                const dStr = day.date.replace(/-/g, '');
+                // Set fixed time 9:00 AM
+                const start = `${dStr}T090000`;
+                const end = `${dStr}T09${r.duration}00`;
+                
+                ics += "BEGIN:VEVENT\n";
+                ics += `DTSTART:${start}\nDTEND:${end}\n`;
+                ics += `SUMMARY:SilverStrength: ${day.routineKey}\n`;
+                ics += `DESCRIPTION:Type: ${r.type} \\nLength: ${r.duration} minutes.\n`;
+                ics += "END:VEVENT\n";
+            });
+
+            ics += "END:VCALENDAR";
+            
+            const blob = new Blob([ics], {type:'text/calendar'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'silverstrength_plan.ics';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+
+        /* --- LIBRARY --- */
+        function renderLibrary() {
+            const list = document.getElementById('lib-list');
+            list.innerHTML = "";
+            for(let key in library) {
+                const ex = library[key];
+                list.innerHTML += `
+                    <div class="lib-item">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3>${key}</h3>
+                            <span class="lib-tag">${ex.type}</span>
+                        </div>
+                        <p>${ex.desc}</p>
+                        <ul style="padding-left:20px; color:var(--text-light); font-size:0.9rem;">
+                            ${ex.steps.map(s=>`<li>${s}</li>`).join('')}
+                        </ul>
+                        <div class="lib-benefit"><i class="fas fa-heartbeat"></i> <b>Why:</b> ${ex.benefit}</div>
                     </div>
                 `;
             }
         }
 
-        function exportToCalendar() {
-            // Generate ICS content
-            let icsMsg = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//SilverStrength//EN\n";
-            const today = new Date();
-            
-            for(let i=0; i<7; i++) {
-                const d = new Date(today);
-                d.setDate(today.getDate() + i);
-                // Set time to 9am
-                d.setHours(9,0,0,0);
-                
-                // Simple logic mapping
-                let title = "SilverStrength Workout";
-                if(d.getDay()%2 !== 0) title = "SilverStrength: Strength";
-                else title = "SilverStrength: Cardio/Mobility";
-
-                const dateStr = d.toISOString().replace(/[-:]/g,'').split('.')[0] + "Z";
-                const endD = new Date(d.getTime() + 20*60000); // +20 mins
-                const endStr = endD.toISOString().replace(/[-:]/g,'').split('.')[0] + "Z";
-
-                icsMsg += "BEGIN:VEVENT\n";
-                icsMsg += `DTSTART:${dateStr}\n`;
-                icsMsg += `DTEND:${endStr}\n`;
-                icsMsg += `SUMMARY:${title}\n`;
-                icsMsg += "END:VEVENT\n";
-            }
-            icsMsg += "END:VCALENDAR";
-
-            const blob = new Blob([icsMsg], { type: 'text/calendar' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'silverstrength_schedule.ics';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        /* --- 6. AUDIO ENGINE (Calming Chime) --- */
-        function playCalmingChime() {
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-                oscillator.frequency.exponentialRampToValueAtTime(261.63, audioCtx.currentTime + 1.5); // Drop to C4
-
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2);
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 2);
-            } catch (e) {
-                console.log("Audio play failed (interaction required first time)");
-            }
-        }
-
-        /* --- 7. ACTIVE WORKOUT --- */
-        let activeRoutine = null;
+        /* --- ACTIVE WORKOUT --- */
+        let activeR = null;
         let actIdx = 0;
         let timer = null;
         let timerVal = 0;
         let isPaused = false;
 
-        function startRoutine(key) {
-            activeRoutine = routines[key];
-            activeRoutine.id = key;
+        function startWorkout(key) {
+            activeR = routines[key];
             actIdx = 0;
             document.getElementById('view-active').classList.remove('hidden');
-            document.getElementById('act-routine-title').innerText = activeRoutine.title;
-            loadExercise();
+            document.getElementById('act-routine').innerText = key;
+            loadEx();
         }
 
-        function loadExercise() {
-            if (actIdx >= activeRoutine.exercises.length) {
-                finishWorkout();
-                return;
-            }
-            const name = activeRoutine.exercises[actIdx];
+        function loadEx() {
+            if(actIdx >= activeR.exercises.length) return finishWorkout();
+            
+            const name = activeR.exercises[actIdx];
             const data = library[name];
             
-            document.getElementById('act-index').innerText = actIdx + 1;
             document.getElementById('act-name').innerText = name;
+            document.getElementById('act-idx').innerText = actIdx+1;
             
             // Cues
-            document.getElementById('act-cues').innerHTML = data.cues.map(c => `<li>${c}</li>`).join('');
+            document.getElementById('act-cues').innerHTML = data.steps.map(s=>`<li>${s}</li>`).join('');
             document.getElementById('act-tempo').innerText = data.tempo;
             document.getElementById('act-breath').innerText = data.breath;
 
@@ -543,15 +536,15 @@
             const btn = document.getElementById('act-btn');
             clearInterval(timer);
 
-            if (data.type === 'reps') {
-                viz.innerHTML = `<div class="timer-display" style="color:var(--accent)">${data.val}<span style="font-size:2rem; color:var(--primary-light)"> reps</span></div>`;
-                btn.innerText = "Completed";
+            if(data.type === 'reps') {
+                viz.innerHTML = `<div class="timer-big" style="color:var(--accent)">${data.val}<span style="font-size:2rem;color:var(--text-light)">reps</span></div>`;
+                btn.innerText = "Check Complete";
                 btn.className = "btn btn-success";
                 btn.onclick = nextExercise;
             } else {
                 timerVal = data.val;
                 isPaused = false;
-                viz.innerHTML = `<div class="timer-display" id="timer-val">00:${timerVal}</div>`;
+                viz.innerHTML = `<div class="timer-big" id="timer-val">00:${timerVal}</div>`;
                 btn.innerText = "Start Timer";
                 btn.className = "btn btn-primary";
                 btn.onclick = toggleTimer;
@@ -560,12 +553,11 @@
 
         function toggleTimer() {
             const btn = document.getElementById('act-btn');
-            if (btn.innerText === "Start Timer") {
+            if(btn.innerText === "Start Timer") {
                 btn.innerText = "Pause";
-                // Init audio context on first user click
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                startTimerLoop();
-            } else if (btn.innerText === "Pause") {
+                if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+                startLoop();
+            } else if(btn.innerText === "Pause") {
                 isPaused = true;
                 btn.innerText = "Resume";
             } else {
@@ -574,24 +566,34 @@
             }
         }
 
-        function startTimerLoop() {
+        function startLoop() {
             timer = setInterval(() => {
-                if (!isPaused) {
+                if(!isPaused) {
                     timerVal--;
                     document.getElementById('timer-val').innerText = `00:${timerVal.toString().padStart(2,'0')}`;
-                    if (timerVal <= 0) {
+                    if(timerVal <= 0) {
                         clearInterval(timer);
-                        playCalmingChime(); // Play Sound
+                        playChime();
                         nextExercise();
                     }
                 }
             }, 1000);
         }
 
-        function nextExercise() { actIdx++; loadExercise(); }
+        function playChime() {
+            if(!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.value = 440;
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.5);
+            osc.start(); osc.stop(audioCtx.currentTime+1.5);
+        }
+
+        function nextExercise() { actIdx++; loadEx(); }
 
         function quitWorkout() {
-            if(confirm("Stop workout?")) {
+            if(confirm("Quit?")) {
                 clearInterval(timer);
                 document.getElementById('view-active').classList.add('hidden');
             }
@@ -601,61 +603,15 @@
             clearInterval(timer);
             document.getElementById('view-active').classList.add('hidden');
             
-            // Log App Workout
-            appState.logs.push({
-                date: new Date().toISOString().split('T')[0],
-                type: 'App',
-                name: activeRoutine.title,
-                duration: 20 // Approx duration
-            });
-            saveData();
+            // Mark Today Complete
+            const todayStr = new Date().toISOString().split('T')[0];
+            const task = appState.weekPlan.find(d => d.date === todayStr);
+            if(task) task.completed = true;
+
+            appState.logs.push({date: new Date().toISOString(), duration: 20, type: 'Workout'});
+            save();
+            initApp();
             alert("Workout Complete!");
-            updateDashboard();
-        }
-
-        /* --- 8. TRACKER --- */
-        function renderTracker() {
-            const ctx = document.getElementById('weightChart').getContext('2d');
-            const sortedLog = [...appState.weightLog].sort((a,b) => new Date(a.date) - new Date(b.date));
-            
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: sortedLog.map(x => x.date),
-                    datasets: [{ label: 'Weight', data: sortedLog.map(x => x.weight), borderColor: '#2563eb', tension: 0.3 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-
-            // History List
-            const list = document.getElementById('history-list');
-            list.innerHTML = "";
-            const recent = [...appState.logs].reverse().slice(0,10);
-            
-            recent.forEach((log, index) => {
-                list.innerHTML += `
-                    <div class="schedule-row">
-                        <div style="font-weight:bold;">${log.name}</div>
-                        <div>
-                            <span class="tag" style="background:${log.type==='App'?'#dbeafe':'#f3e8ff'}; color:${log.type==='App'?'#1e40af':'#6b21a8'}">${log.type}</span>
-                            <span style="font-size:0.9rem;">${log.duration}m</span>
-                            <i class="fas fa-trash" style="color:#ef4444; margin-left:10px; cursor:pointer;" onclick="deleteLog(${index})"></i>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-        
-        function deleteLog(index) {
-            // Index passed is relative to the sliced reverse array
-            // Real app would use IDs, simplified here:
-            if(confirm("Remove this entry?")) {
-                const realIndex = appState.logs.length - 1 - index;
-                appState.logs.splice(realIndex, 1);
-                saveData();
-                renderTracker();
-                updateDashboard();
-            }
         }
 
     </script>
